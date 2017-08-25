@@ -1,0 +1,11 @@
+<beans>
+    <bean id="Bean1" class="ua.alex.ioc.core.ApplecationContext">
+        <property name="testProperty" value="testValue"/>
+        <property name="testPropertyClass" ref="testtRef"/>
+    </bean>
+
+    <bean id="Bean2" class="ua.alex.ioc.core.ApplecationContext">
+        <property name="testProperty" value="testValue222"/>
+        <property name="testPropertyClass" ref="Bean2"/>
+    </bean>
+</beans>

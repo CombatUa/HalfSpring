@@ -1,11 +1,14 @@
 <beans>
-    <bean id="Bean1" class="ua.alex.ioc.core.ApplecationContext">
-        <property name="testProperty" value="testValue"/>
-        <property name="testPropertyClass" ref="testtRef"/>
+
+    <bean id="Bean2" class="ua.alex.service.PaymentService">
+        <property name="emailService" ref="myEmailService"/>
+        <property name="paymentType" value="PaymentTypeValue"/>
     </bean>
 
-    <bean id="Bean2" class="ua.alex.ioc.core.ApplecationContext">
-        <property name="testProperty" value="testValue222"/>
-        <property name="testPropertyClass" ref="Bean2"/>
+    <bean id="myEmailService" class="ua.alex.service.EmailService">
+        <property name="protocol" value="POP3"/>
+        <property name="port" value="123"/>
     </bean>
+
+
 </beans>

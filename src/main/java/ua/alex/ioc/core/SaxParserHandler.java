@@ -11,56 +11,88 @@ import java.util.Deque;
 import java.util.List;
 
 public class SaxParserHandler extends DefaultHandler {
+    public List<BeanDefenition> getBeanDefenitionList() {
+        return beanDefenitionList;
+    }
 
-    List<BeanDefenition> beanDefenitionList = new ArrayList<>();
+    private List<BeanDefenition> beanDefenitionList = new ArrayList<>();
+    private Deque<BeanDefenition> beanStack = new ArrayDeque<>();
+//    private Deque<String> elementStack = new ArrayDeque<>();
 
-    private Deque<Object> objectStack = new ArrayDeque<>();
-    private Deque<String> elementStack = new ArrayDeque<>();
+    @Override
+    public String toString() {
+        return "SaxParserHandler{" +
+                "beanDefenitionList=" + beanDefenitionList +
+                ", beanStack=" + beanStack +
+                '}';
+    }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-        this.elementStack.push(qName);
-
+//        this.elementStack.push(qName);
+        System.out.println("--------");
+        String propertyName = null;
+        String propertyValue = null;
+        String propertyRef = null;
         if ("bean".equals(qName)) {
             BeanDefenition beanDefenition = new BeanDefenition();
-            objectStack.push(beanDefenition);
+            beanStack.push(beanDefenition);
             beanDefenitionList.add(beanDefenition);
-        }
+            int length = attributes.getLength();
+            // process each attribute
+            for (int i = 0; i < length; i++) {
+                String name = attributes.getQName(i);
+                String value = attributes.getValue(i);
+                if ("id".equals(name)) {
+                    beanDefenition.setBeanId(value);
+                } else if ("class".equals(name)) {
+                    beanDefenition.setBeanClass(value);
+                }
 
-        System.out.println(qName);
-        // get the number of attributes in the list
-        int length = attributes.getLength();
-   // process each attribute
-        for (int i = 0; i < length; i++) {
-// get qualified (prefixed) name by index
-            String name = attributes.getQName(i);
-            System.out.println("Name:" + name);
-// get attribute's value by index.
-            String value = attributes.getValue(i);
-            System.out.println("Value:" + value);
-// get namespace URI by index (if parser is namespace-aware)
-            String nsUri = attributes.getURI(i);
-            System.out.println("NS Uri:" + nsUri);
-// get local name by index
-            String lName = attributes.getLocalName(i);
-            System.out.println("Local Name:" + lName);
+            }
 
+
+        } else if ("property".equals(qName)) {
+            int length = attributes.getLength();
+
+            // process each attribute
+            for (int i = 0; i < length; i++) {
+                String name = attributes.getQName(i);
+                String value = attributes.getValue(i);
+                if ("name".equals(name)) {
+                    propertyName = value;
+                } else if ("value".equals(name)) {
+                    propertyValue = value;
+                } else if ("ref".equals(name)) {
+                    propertyRef = value;
+                }
+            }
+            if (propertyName != null) {
+
+                if (propertyValue != null) {
+                    beanStack.peek().setValueDependecies(propertyName, propertyValue);
+
+                } else {
+                    beanStack.peek().setRefDependecy(propertyName, propertyRef);
+                }
+            }
 
         }
     }
 
-        @Override
-        public void endElement (String uri, String localName, String qName) throws SAXException {
-           elementStack.pop();
-            if ("bean".equals(qName)) {
-                Object object = (BeanDefenition)objectStack.pop();
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        System.out.println("++++++End+++++++");
 
-            }
+        if ("bean".equals(qName)) {
+            beanStack.pop();
         }
+    }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        super.characters(ch, start, length);
+        System.out.println("+++++++++++++++++++");
+        System.out.println(new String(ch, start, length).toString());
     }
 }

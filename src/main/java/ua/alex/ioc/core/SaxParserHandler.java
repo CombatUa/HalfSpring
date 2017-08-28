@@ -1,9 +1,11 @@
 package ua.alex.ioc.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import ua.alex.ioc.entity.BeanDefenition;
+import ua.alex.ioc.entity.BeanDefinition;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -11,18 +13,20 @@ import java.util.Deque;
 import java.util.List;
 
 public class SaxParserHandler extends DefaultHandler {
-    public List<BeanDefenition> getBeanDefenitionList() {
-        return beanDefenitionList;
+    private static final Logger log = LoggerFactory.getLogger(SaxParserHandler.class);
+
+    public List<BeanDefinition> getBeanDefinitionList() {
+        return beanDefinitionList;
     }
 
-    private List<BeanDefenition> beanDefenitionList = new ArrayList<>();
-    private Deque<BeanDefenition> beanStack = new ArrayDeque<>();
+    private List<BeanDefinition> beanDefinitionList = new ArrayList<>();
+    private Deque<BeanDefinition> beanStack = new ArrayDeque<>();
 //    private Deque<String> elementStack = new ArrayDeque<>();
 
     @Override
     public String toString() {
         return "SaxParserHandler{" +
-                "beanDefenitionList=" + beanDefenitionList +
+                "beanDefinitionList=" + beanDefinitionList +
                 ", beanStack=" + beanStack +
                 '}';
     }
@@ -30,24 +34,23 @@ public class SaxParserHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-//        this.elementStack.push(qName);
-        System.out.println("--------");
+        log.debug("Start Element {}", qName);
         String propertyName = null;
         String propertyValue = null;
         String propertyRef = null;
         if ("bean".equals(qName)) {
-            BeanDefenition beanDefenition = new BeanDefenition();
-            beanStack.push(beanDefenition);
-            beanDefenitionList.add(beanDefenition);
+            BeanDefinition beanDefinition = new BeanDefinition();
+            beanStack.push(beanDefinition);
+            beanDefinitionList.add(beanDefinition);
             int length = attributes.getLength();
             // process each attribute
             for (int i = 0; i < length; i++) {
                 String name = attributes.getQName(i);
                 String value = attributes.getValue(i);
                 if ("id".equals(name)) {
-                    beanDefenition.setBeanId(value);
+                    beanDefinition.setBeanId(value);
                 } else if ("class".equals(name)) {
-                    beanDefenition.setBeanClass(value);
+                    beanDefinition.setBeanClass(value);
                 }
 
             }
@@ -83,8 +86,7 @@ public class SaxParserHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        System.out.println("++++++End+++++++");
-
+        log.debug("End Element {}", qName);
         if ("bean".equals(qName)) {
             beanStack.pop();
         }
@@ -92,7 +94,6 @@ public class SaxParserHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        System.out.println("+++++++++++++++++++");
-        System.out.println(new String(ch, start, length).toString());
+        //log.debug("in characters section:{}", new String(ch, start, length));
     }
 }

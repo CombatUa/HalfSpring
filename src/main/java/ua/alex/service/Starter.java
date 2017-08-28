@@ -7,7 +7,7 @@ public class Starter {
         try {
             GenericApplicationContext context = new GenericApplicationContext("src/main/resources/xml-config.xml");
            PaymentService paymentService =  context.getBean(PaymentService.class);
-           paymentService.createPayment(1234);
+           paymentService.createPayment(1234888);
         } catch (Exception e) {
             e.printStackTrace();
         }

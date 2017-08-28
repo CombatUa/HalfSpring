@@ -1,12 +1,16 @@
 package ua.alex.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EmailService {
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private String protocol;
 
     private int port;
 
     public void sendEmail(String content) {
-        System.out.println("Send email with content:" + content);
+        log.info("Send email with content:{}",content);
     }
 
     @Override
@@ -18,12 +22,12 @@ public class EmailService {
     }
 
     public void setProtocol(String protocol) {
-        System.out.println("Setter protocol");
+       log.debug("Set protocol:{}",protocol);
         this.protocol = protocol;
     }
 
     public void setPort(int port) {
-        System.out.println("Setter port");
+        log.debug("Set port:{}",port);
         this.port = port;
     }
 }

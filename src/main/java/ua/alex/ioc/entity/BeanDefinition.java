@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class BeanDefenition {
+public class BeanDefinition {
 
-    Map<String, String> refDependecies = new HashMap<>();
-    Map<String, String> valueDependecies = new HashMap<>();
+    private Map<String, String> refDependecies = new HashMap<>();
+    private Map<String, String> valueDependecies = new HashMap<>();
     private String beanId;
     private String beanClass;
 
@@ -53,7 +53,7 @@ public class BeanDefenition {
     }
     @Override
     public String toString() {
-        return "BeanDefenition{" +
+        return "BeanDefinition{" +
                 "refDependecies=" + refDependecies +
                 ", valueDependecies=" + valueDependecies +
                 ", beanId='" + beanId + '\'' +

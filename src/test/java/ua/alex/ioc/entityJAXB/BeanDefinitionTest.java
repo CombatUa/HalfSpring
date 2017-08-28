@@ -7,7 +7,7 @@ import javax.xml.bind.Unmarshaller;
 
 import java.io.File;
 
-class BeanDefenitionTest {
+class BeanDefinitionTest {
     @Test
     void justJAXBTest() throws Exception {
         JAXBContext jaxbContext = JAXBContext.newInstance(BeanDefenitions.class);

@@ -13,8 +13,6 @@ class XmlBeanDefinitionReaderTest {
         for (BeanDefinition beanDefinition : beanDefinitions) {
             System.out.println(beanDefinition);
         }
-
-
     }
 
 }

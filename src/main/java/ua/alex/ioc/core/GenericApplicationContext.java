@@ -149,10 +149,22 @@ public class GenericApplicationContext implements ApplecationContext {
                     Class fieldType = parameter.getType();
                     if (fieldType == String.class) {
                         castedValue = value;
-                    } else if ("int".equals(fieldType.getSimpleName())) {
-                        castedValue = Integer.valueOf(value);
+                    } else if (fieldType == char.class) {
+                        castedValue = value.charAt(0);
+                    } else if (fieldType == byte.class) {
+                        castedValue = Byte.parseByte(value);
+                    } else if (fieldType == short.class) {
+                        castedValue = Short.parseShort(value);
+                    } else if (fieldType == int.class) {
+                        castedValue = Integer.parseInt(value);
+                    } else if (fieldType == long.class) {
+                        castedValue = Long.parseLong(value);
+                    } else if (fieldType == float.class) {
+                        castedValue = Float.parseFloat(value);
+                    } else if (fieldType == double.class) {
+                        castedValue = Double.parseDouble(value);
                     } else {
-                        log.debug("unprocessed type:{}", fieldType.getSimpleName());
+                        log.debug("unprocessed type:{},{}", fieldType.getSimpleName(), field.getType());
                     }
                     method.invoke(beanInstance, castedValue);
                 }

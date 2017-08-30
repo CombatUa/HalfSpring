@@ -1,0 +1,15 @@
+<beans>
+
+    <bean id="mySampleTest" class="ua.alex.service.SampleServiceTest">
+        <property name="aChar" value="G"/>
+        <property name="aByte" value="2"/>
+        <property name="aShort" value="3"/>
+        <property name="anInt" value="4"/>
+        <property name="aLong" value="5"/>
+        <property name="aFloat" value="5.2"/>
+        <property name="aDouble" value="6.2"/>
+        <property name="string" value="POP3"/>
+    </bean>
+
+
+</beans>

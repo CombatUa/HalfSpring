@@ -67,19 +67,13 @@ public class GenericApplicationContext implements ApplecationContext {
     }
 
     private void constract() throws Exception {
-        //read beandefenitions
         for (Map.Entry<String, BeanDefinition> stringBeanDefenitionEntry : beansDefinitions.entrySet()) {
             Object bean = getBean(stringBeanDefenitionEntry.getKey());
-
             if (bean == null) {
 //                createBean(stringBeanDefenitionEntry.getValue());
                 createBeanWithSetter(stringBeanDefenitionEntry.getValue());
             }
         }
-
-        //read value array
-        //start reading ref array
-        // if there is no instance - constract it - run constract
     }
 
 
@@ -164,7 +158,7 @@ public class GenericApplicationContext implements ApplecationContext {
                     } else if (fieldType == double.class) {
                         castedValue = Double.parseDouble(value);
                     } else {
-                        log.debug("unprocessed type:{},{}", fieldType.getSimpleName(), field.getType());
+                        log.debug("unprocessed type:{}", field.getType());
                     }
                     method.invoke(beanInstance, castedValue);
                 }

@@ -19,8 +19,8 @@ public class SaxParserHandler extends DefaultHandler {
         return beanDefinitionList;
     }
 
-    private List<BeanDefinition> beanDefinitionList = new ArrayList<>();
-    private Deque<BeanDefinition> beanStack = new ArrayDeque<>();
+    private final List<BeanDefinition> beanDefinitionList = new ArrayList<>();
+    private final Deque<BeanDefinition> beanStack = new ArrayDeque<>();
 //    private Deque<String> elementStack = new ArrayDeque<>();
 
     @Override
@@ -74,10 +74,10 @@ public class SaxParserHandler extends DefaultHandler {
             if (propertyName != null) {
 
                 if (propertyValue != null) {
-                    beanStack.peek().setValueDependecies(propertyName, propertyValue);
+                    beanStack.peek().setValueDependencies(propertyName, propertyValue);
 
                 } else {
-                    beanStack.peek().setRefDependecy(propertyName, propertyRef);
+                    beanStack.peek().setRefDependency(propertyName, propertyRef);
                 }
             }
 

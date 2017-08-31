@@ -25,8 +25,6 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
             parser.parse(configFile, handler);
             beanDefinitions.addAll(handler.getBeanDefinitionList());
         }
-
-
         return beanDefinitions;
     }
 }

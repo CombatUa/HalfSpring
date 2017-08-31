@@ -6,33 +6,33 @@ import java.util.Set;
 
 public class BeanDefinition {
 
-    private Map<String, String> refDependecies = new HashMap<>();
-    private Map<String, String> valueDependecies = new HashMap<>();
+    private final Map<String, String> refDependencies = new HashMap<>();
+    private final Map<String, String> valueDependencies = new HashMap<>();
     private String beanId;
     private String beanClass;
 
-    public Set<Map.Entry<String, String>> getAllRefDependecies() {
-        return refDependecies.entrySet();
+    public Set<Map.Entry<String, String>> getAllRefDependencies() {
+        return refDependencies.entrySet();
     }
 
-    public Set<Map.Entry<String, String>> getAllValueDependecies() {
-        return valueDependecies.entrySet();
+    public Set<Map.Entry<String, String>> getAllValueDependencies() {
+        return valueDependencies.entrySet();
     }
 
-    public String getRefDependecies(String refName) {
-        return refDependecies.get(refName);
+    public String getRefDependencies(String refName) {
+        return refDependencies.get(refName);
     }
 
-    public void setRefDependecy(String name, String value) {
-        refDependecies.put(name, value);
+    public void setRefDependency(String name, String value) {
+        refDependencies.put(name, value);
     }
 
-    public String getValueDependecies(String name) {
-        return valueDependecies.get(name);
+    public String getValueDependencies(String name) {
+        return valueDependencies.get(name);
     }
 
-    public void setValueDependecies(String name, String value) {
-        valueDependecies.put(name, value);
+    public void setValueDependencies(String name, String value) {
+        valueDependencies.put(name, value);
     }
 
 
@@ -54,8 +54,8 @@ public class BeanDefinition {
     @Override
     public String toString() {
         return "BeanDefinition{" +
-                "refDependecies=" + refDependecies +
-                ", valueDependecies=" + valueDependecies +
+                "refDependencies=" + refDependencies +
+                ", valueDependencies=" + valueDependencies +
                 ", beanId='" + beanId + '\'' +
                 ", beanClass='" + beanClass + '\'' +
                 '}';

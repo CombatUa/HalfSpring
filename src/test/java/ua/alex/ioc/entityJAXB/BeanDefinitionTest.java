@@ -10,9 +10,9 @@ import java.io.File;
 class BeanDefinitionTest {
     @Test
     void justJAXBTest() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(BeanDefenitions.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(BeanDefinitions.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        BeanDefenitions beanDefenitions = (BeanDefenitions)unmarshaller.unmarshal(new File("src/main/resources/xml-config.xml"));
-        System.out.println(beanDefenitions);
+        BeanDefinitions beanDefinitions = (BeanDefinitions)unmarshaller.unmarshal(new File("src/main/resources/xml-config.xml"));
+        System.out.println(beanDefinitions);
     }
 }

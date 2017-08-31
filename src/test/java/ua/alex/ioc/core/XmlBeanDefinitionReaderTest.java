@@ -19,7 +19,7 @@ class XmlBeanDefinitionReaderTest {
         assertAll(BeanDefinition.class.getSimpleName(),
                 () -> assertTrue(beanDefinition.isPresent()),
                 () -> assertEquals("mySampleTest", beanDefinition.get().getBeanId()),
-                () -> assertEquals("6.2", beanDefinition.get().getValueDependecies("aDouble")));
+                () -> assertEquals("6.2", beanDefinition.get().getValueDependencies("aDouble")));
     }
 
 }

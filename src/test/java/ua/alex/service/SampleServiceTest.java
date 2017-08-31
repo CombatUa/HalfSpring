@@ -1,16 +1,14 @@
 package ua.alex.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class SampleServiceTest {
-    char aChar;
-    byte aByte;
-    short aShort;
-    int anInt;
-    long aLong;
-    float aFloat;
-    double aDouble;
-    String string;
+public class SampleServiceTest implements SampleService {
+    private char aChar;
+    private byte aByte;
+    private short aShort;
+    private int anInt;
+    private long aLong;
+    private float aFloat;
+    private double aDouble;
+    private String string;
 
     public char getAChar() {
         return aChar;

@@ -48,7 +48,7 @@ public class GenericApplicationContext implements ApplicationContext {
     public <T> T getBean(Class<T> clazz) {
         T foundedBean = null;
         for (Bean beansInstance : beansInstances) {
-            if (clazz == beansInstance.getValue().getClass()) {
+            if (clazz.isInstance(beansInstance.getValue())) {
                 foundedBean = (T) beansInstance.getValue();
                 break;
             }

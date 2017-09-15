@@ -21,6 +21,10 @@ public class PaymentService {
         emailService.sendEmail("Create payment with amount " + amount);
     }
 
+    public EmailService getEmailService() {
+        return emailService;
+    }
+
     @Override
     public String toString() {
         return "PaymentService{" +

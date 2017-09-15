@@ -57,4 +57,17 @@ public enum ValueParser {
     };
 
     public abstract Object getValue(String toParse);
+
+    public static boolean isValidEnum( String enumName) {
+        if (enumName == null) {
+            return false;
+        } else {
+            try {
+                ValueParser.valueOf(enumName.toUpperCase());
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+    }
 }

@@ -7,9 +7,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import ua.alex.ioc.entity.BeanDefinition;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 public class SaxParserHandler extends DefaultHandler {
@@ -20,17 +18,11 @@ public class SaxParserHandler extends DefaultHandler {
     public List<BeanDefinition> getBeanDefinitionList() {
         return beanDefinitionList;
     }
-    @Override
-    public String toString() {
-        return "SaxParserHandler{" +
-                "beanDefinitionList=" + beanDefinitionList +
-                '}';
-    }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-        log.debug("Start Element {}", qName);
+        log.debug("Start Element: {}", qName);
 
         if ("bean".equals(qName)) {
             processBeanElement(attributes);
@@ -79,5 +71,12 @@ public class SaxParserHandler extends DefaultHandler {
             }
 
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SaxParserHandler{" +
+                "beanDefinitionList=" + beanDefinitionList +
+                '}';
     }
 }

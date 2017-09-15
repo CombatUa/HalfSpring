@@ -1,11 +1,11 @@
 <beans>
 
-    <bean id="Bean2" class="ua.alex.service.PaymentService">
+    <bean id="Bean2" class="ua.alex.domain.PaymentService">
         <property name="emailService" ref="myEmailService"/>
         <property name="paymentType" value="PaymentTypeValue"/>
     </bean>
 
-    <bean id="myEmailService" class="ua.alex.service.EmailService">
+    <bean id="myEmailService" class="ua.alex.domain.EmailService">
         <property name="protocol" value="POP3"/>
         <property name="port" value="123"/>
     </bean>

@@ -1,4 +1,4 @@
-package ua.alex.service;
+package ua.alex.ioc.service;
 
 public interface SampleService {
    char getAChar();

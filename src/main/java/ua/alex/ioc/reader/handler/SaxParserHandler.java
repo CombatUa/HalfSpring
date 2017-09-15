@@ -1,4 +1,4 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.reader.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,14 +13,14 @@ import java.util.Deque;
 import java.util.List;
 
 public class SaxParserHandler extends DefaultHandler {
-    private static final Logger log = LoggerFactory.getLogger(SaxParserHandler.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final List<BeanDefinition> beanDefinitionList = new ArrayList<>();
+    private final Deque<BeanDefinition> beanStack = new ArrayDeque<>();
+    BeanDefinition currentBeanDefinition;
 
     public List<BeanDefinition> getBeanDefinitionList() {
         return beanDefinitionList;
     }
-
-    private final List<BeanDefinition> beanDefinitionList = new ArrayList<>();
-    private final Deque<BeanDefinition> beanStack = new ArrayDeque<>();
 //    private Deque<String> elementStack = new ArrayDeque<>();
 
     @Override
@@ -39,18 +39,17 @@ public class SaxParserHandler extends DefaultHandler {
         String propertyValue = null;
         String propertyRef = null;
         if ("bean".equals(qName)) {
-            BeanDefinition beanDefinition = new BeanDefinition();
-            beanStack.push(beanDefinition);
-            beanDefinitionList.add(beanDefinition);
+            currentBeanDefinition = new BeanDefinition();
+            beanDefinitionList.add(currentBeanDefinition);
             int length = attributes.getLength();
             // process each attribute
             for (int i = 0; i < length; i++) {
                 String name = attributes.getQName(i);
                 String value = attributes.getValue(i);
                 if ("id".equals(name)) {
-                    beanDefinition.setBeanId(value);
+                    currentBeanDefinition.setBeanId(value);
                 } else if ("class".equals(name)) {
-                    beanDefinition.setBeanClass(value);
+                    currentBeanDefinition.setBeanClass(value);
                 }
 
             }
@@ -74,26 +73,13 @@ public class SaxParserHandler extends DefaultHandler {
             if (propertyName != null) {
 
                 if (propertyValue != null) {
-                    beanStack.peek().setValueDependencies(propertyName, propertyValue);
+                    currentBeanDefinition.setValueDependencies(propertyName, propertyValue);
 
                 } else {
-                    beanStack.peek().setRefDependency(propertyName, propertyRef);
+                    currentBeanDefinition.setRefDependency(propertyName, propertyRef);
                 }
             }
 
         }
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        log.debug("End Element {}", qName);
-        if ("bean".equals(qName)) {
-            beanStack.pop();
-        }
-    }
-
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-        //log.debug("in characters section:{}", new String(ch, start, length));
     }
 }

@@ -1,7 +1,9 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.alex.ioc.reader.BeanDefinitionReader;
+import ua.alex.ioc.reader.XmlBeanDefinitionReader;
 import ua.alex.ioc.entity.Bean;
 import ua.alex.ioc.entity.BeanDefinition;
 
@@ -14,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 public class GenericApplicationContext implements ApplicationContext {
-    private static final Logger log = LoggerFactory.getLogger(GenericApplicationContext.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final String SETTER_PREFIX = "set";
     private final Map<String, BeanDefinition> beansDefinitions = new HashMap<>();
     private final List<Bean> beansInstances = new ArrayList<>();
-    final BeanDefinitionReader reader;
+    private BeanDefinitionReader reader;
     private String path;
 
     public GenericApplicationContext(String... paths) throws Exception {

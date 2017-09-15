@@ -1,10 +1,11 @@
-package ua.alex.service;
+package ua.alex.domain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EmailService {
-    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private String protocol;
 
     private int port;

@@ -1,4 +1,4 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.reader;
 
 import org.junit.jupiter.api.Test;
 

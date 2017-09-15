@@ -1,4 +1,4 @@
-package ua.alex.service;
+package ua.alex.ioc.service;
 
 public class SampleServiceTest implements SampleService {
     private char aChar;

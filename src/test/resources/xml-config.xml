@@ -1,6 +1,6 @@
 <beans>
 
-    <bean id="mySampleTest" class="ua.alex.service.SampleServiceTest">
+    <bean id="mySampleTest" class="ua.alex.ioc.service.SampleServiceTest">
         <property name="aChar" value="G"/>
         <property name="aByte" value="2"/>
         <property name="aShort" value="3"/>

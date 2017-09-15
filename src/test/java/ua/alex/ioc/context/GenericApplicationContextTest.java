@@ -1,10 +1,10 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.context;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import ua.alex.service.*;
+import ua.alex.ioc.service.*;
 
 class GenericApplicationContextTest {
     @Test

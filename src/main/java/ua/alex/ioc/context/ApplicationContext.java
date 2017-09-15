@@ -1,4 +1,4 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.context;
 
 import java.util.List;
 

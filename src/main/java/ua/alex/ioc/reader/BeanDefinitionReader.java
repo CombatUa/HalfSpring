@@ -1,4 +1,4 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.reader;
 
 import ua.alex.ioc.entity.BeanDefinition;
 

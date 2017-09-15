@@ -1,7 +1,8 @@
-package ua.alex.ioc.core;
+package ua.alex.ioc.reader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.alex.ioc.reader.handler.SaxParserHandler;
 import ua.alex.ioc.entity.BeanDefinition;
 
 import javax.xml.parsers.SAXParser;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XmlBeanDefinitionReader implements BeanDefinitionReader {
-    private static final Logger log = LoggerFactory.getLogger(XmlBeanDefinitionReader.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public List<BeanDefinition> readBean(String... configurations) throws Exception {
         log.debug("Read Bean Started!");

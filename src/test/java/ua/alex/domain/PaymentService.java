@@ -1,7 +1,11 @@
-package ua.alex.service;
+package ua.alex.domain;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PaymentService {
     private EmailService emailService;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;

@@ -2,6 +2,7 @@ package ua.alex.ioc.context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.alex.ioc.exception.BeanInstantiationException;
 import ua.alex.ioc.reader.BeanDefinitionReader;
 import ua.alex.ioc.reader.XmlBeanDefinitionReader;
 import ua.alex.ioc.entity.Bean;
@@ -16,22 +17,70 @@ import java.util.List;
 import java.util.Map;
 
 public class GenericApplicationContext implements ApplicationContext {
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final String SETTER_PREFIX = "set";
-    private final Map<String, BeanDefinition> beansDefinitions = new HashMap<>();
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Map<String, BeanDefinition> beanIdToBeandefinitionMap = new HashMap<>();
     private final List<Bean> beansInstances = new ArrayList<>();
     private BeanDefinitionReader reader;
     private String path;
 
-    public GenericApplicationContext(String... paths) throws Exception {
+    public GenericApplicationContext(String... paths) {
         log.debug("Context Started!");
         reader = new XmlBeanDefinitionReader();
-        List<BeanDefinition> beanDefinitions = reader.readBean(paths);
-        for (BeanDefinition beanDefinition : beanDefinitions) {
-            this.beansDefinitions.put(beanDefinition.getBeanId(), beanDefinition);
+        List<BeanDefinition> beanDefinitions = null;
+        try {
+            beanDefinitions = reader.readBean(paths);
+        } catch (Exception e) {
+            throw new BeanInstantiationException(e);
         }
-        construct();
+        for (BeanDefinition beanDefinition : beanDefinitions) {
+            this.beanIdToBeandefinitionMap.put(beanDefinition.getBeanId(), beanDefinition);
+        }
+        try {
+            injectValueDependecies();
+            injectRefDependecies();
+        } catch (Exception e) {
+            throw new BeanInstantiationException(e);
+        }
         log.debug("Beans instances:{}", beansInstances);
+    }
+
+    private void injectRefDependecies() throws Exception {
+        for (Map.Entry<String, BeanDefinition> stringBeanDefinitionEntry : beanIdToBeandefinitionMap.entrySet()) {
+            Class aClass = Class.forName(stringBeanDefinitionEntry.getValue().getBeanClass());
+            Object beanInstance = getBean(stringBeanDefinitionEntry.getKey());
+            for (Map.Entry<String, String> stringStringEntry : stringBeanDefinitionEntry.getValue().getAllRefDependencies()) {
+                String refBeanId = stringStringEntry.getValue();
+                Object refBeanInstance = getBean(refBeanId);
+                String fieldName = stringStringEntry.getKey();
+                Method method = getSetterMethod(aClass, fieldName);
+                method.invoke(beanInstance, refBeanInstance);
+            }
+        }
+    }
+
+    private void injectValueDependecies() throws Exception {
+        for (Map.Entry<String, BeanDefinition> stringBeanDefinitionEntry : beanIdToBeandefinitionMap.entrySet()) {
+
+            Class aClass = Class.forName(stringBeanDefinitionEntry.getValue().getBeanClass());
+            Object beanInstance = aClass.newInstance();
+            for (Map.Entry<String, String> stringStringEntry : stringBeanDefinitionEntry.getValue().getAllValueDependencies()) {
+                String value = stringStringEntry.getValue();
+                String fieldName = stringStringEntry.getKey();
+                Object castedValue = null;
+                Method method = getSetterMethod(aClass, fieldName);
+                for (Parameter parameter : method.getParameters()) {
+                    Class fieldType = parameter.getType();
+                    castedValue = getParsedValue(value, fieldType);
+                    method.invoke(beanInstance, castedValue);
+                }
+            }
+            Bean bean = new Bean();
+            bean.setBeadId(stringBeanDefinitionEntry.getKey());
+            bean.setValue(beanInstance);
+            beansInstances.add(bean);
+        }
+
     }
 
     @Override
@@ -51,7 +100,7 @@ public class GenericApplicationContext implements ApplicationContext {
         T foundedBean = null;
         for (Bean beansInstance : beansInstances) {
             if (clazz.isInstance(beansInstance.getValue())) {
-                foundedBean = (T) beansInstance.getValue();
+                foundedBean = clazz.cast(beansInstance.getValue());
                 break;
             }
         }
@@ -62,7 +111,7 @@ public class GenericApplicationContext implements ApplicationContext {
     @Override
     public <T> T getBean(String beanId, Class<T> clazz) {
         Object beanInstance = getBean(beanId);
-        return (T) beanInstance;
+        return clazz.cast(beanInstance);
     }
 
     @Override
@@ -70,15 +119,15 @@ public class GenericApplicationContext implements ApplicationContext {
         return null;
     }
 
-    private void construct() throws Exception {
-        for (Map.Entry<String, BeanDefinition> stringBeanDefinitionEntry : beansDefinitions.entrySet()) {
-            Object bean = getBean(stringBeanDefinitionEntry.getKey());
-            if (bean == null) {
-//                createBean(stringBeanDefinitionEntry.getValue());
-                createBeanWithSetter(stringBeanDefinitionEntry.getValue());
-            }
-        }
-    }
+//    private void construct() throws Exception {
+//        for (Map.Entry<String, BeanDefinition> stringBeanDefinitionEntry : beanIdToBeandefinitionMap.entrySet()) {
+//            Object bean = getBean(stringBeanDefinitionEntry.getKey());
+//            if (bean == null) {
+////                createBean(stringBeanDefinitionEntry.getValue());
+//                createBeanWithSetter(stringBeanDefinitionEntry.getValue());
+//            }
+//        }
+//    }
 
 
 //    private Bean createBean(BeanDefinition beanDefinition) throws Exception {
@@ -111,7 +160,7 @@ public class GenericApplicationContext implements ApplicationContext {
 //                String refBeanId = stringStringEntry.getValue();
 //                Object refBeanInstance = getBean(refBeanId);
 //                if (refBeanInstance == null) {
-//                    refBeanInstance = createBean(beansDefinitions.get(refBeanId)).getValue();
+//                    refBeanInstance = createBean(beanIdToBeandefinitionMap.get(refBeanId)).getValue();
 //                }
 //                Field field = aClass.getDeclaredField(stringStringEntry.getKey());
 //                field.setAccessible(true);
@@ -127,73 +176,51 @@ public class GenericApplicationContext implements ApplicationContext {
 //        return bean;
 //    }
 
-    private Bean createBeanWithSetter(BeanDefinition beanDefinition) throws Exception {
-        String beanId = beanDefinition.getBeanId();
-        Object beanInstance = getBean(beanId);
-        //check in instances
-        if (beanInstance == null) {
-            Class aClass = Class.forName(beanDefinition.getBeanClass());
-            beanInstance = aClass.newInstance();
-            for (Map.Entry<String, String> stringStringEntry : beanDefinition.getAllValueDependencies()) {
-                String value = stringStringEntry.getValue();
-                String fieldName = stringStringEntry.getKey();
-                Object castedValue = null;
-                Field field = aClass.getDeclaredField(stringStringEntry.getKey());
+//    private Bean createBeanWithSetter(BeanDefinition beanDefinition) throws Exception {
+//        String beanId = beanDefinition.getBeanId();
+//        Object beanInstance = getBean(beanId);
+//        //check in instances
+//        if (beanInstance == null) {
+//            Class aClass = Class.forName(beanDefinition.getBeanClass());
+//            beanInstance = aClass.newInstance();
+//            for (Map.Entry<String, String> stringStringEntry : beanDefinition.getAllValueDependencies()) {
+//                String value = stringStringEntry.getValue();
+//                String fieldName = stringStringEntry.getKey();
+//                Object castedValue = null;
+//                Method method = getSetterMethod(aClass, fieldName);
+//                for (Parameter parameter : method.getParameters()) {
+//                    Class fieldType = parameter.getType();
+//                    castedValue = getParsedValue(value, fieldType);
+//                    method.invoke(beanInstance, castedValue);
+//                }
+//            }
+//
+//            for (Map.Entry<String, String> stringStringEntry : beanDefinition.getAllRefDependencies()) {
+//                String refBeanId = stringStringEntry.getValue();
+//                Object refBeanInstance = getBean(refBeanId);
+//                String fieldName = stringStringEntry.getKey();
+//                if (refBeanInstance == null) {
+//                    refBeanInstance = createBeanWithSetter(beanIdToBeandefinitionMap.get(refBeanId)).getValue();
+//                }
+//                Method method = getSetterMethod(aClass, fieldName);
+//                method.invoke(beanInstance, refBeanInstance);
+//
+//            }
+//
+//        }
+//        Bean bean = new Bean();
+//        bean.setBeadId(beanId);
+//        bean.setValue(beanInstance);
+//        beansInstances.add(bean);
+//        return bean;
+//    }
 
-                Method method = aClass.getMethod(SETTER_PREFIX + capitalize(fieldName), field.getType());
+    private Method getSetterMethod(Class<?> clazz, String fieldName) throws Exception {
+        return clazz.getMethod(SETTER_PREFIX + capitalize(fieldName), clazz.getDeclaredField(fieldName).getType());
+    }
 
-
-                for (Parameter parameter : method.getParameters()) {
-                    Class fieldType = parameter.getType();
-                    if (fieldType == String.class) {
-                        castedValue = value;
-                    } else if (fieldType == char.class) {
-                        castedValue = value.charAt(0);
-                    } else if (fieldType == byte.class) {
-                        castedValue = Byte.parseByte(value);
-                    } else if (fieldType == short.class) {
-                        castedValue = Short.parseShort(value);
-                    } else if (fieldType == int.class) {
-                        castedValue = Integer.parseInt(value);
-                    } else if (fieldType == long.class) {
-                        castedValue = Long.parseLong(value);
-                    } else if (fieldType == float.class) {
-                        castedValue = Float.parseFloat(value);
-                    } else if (fieldType == double.class) {
-                        castedValue = Double.parseDouble(value);
-                    } else {
-                        log.debug("unprocessed type:{}", field.getType());
-                    }
-                    method.invoke(beanInstance, castedValue);
-                }
-
-
-            }
-
-            for (Map.Entry<String, String> stringStringEntry : beanDefinition.getAllRefDependencies()) {
-                String refBeanId = stringStringEntry.getValue();
-                Object refBeanInstance = getBean(refBeanId);
-                String fieldName = stringStringEntry.getKey();
-                Field field = aClass.getDeclaredField(fieldName);
-
-
-                if (refBeanInstance == null) {
-                    refBeanInstance = createBeanWithSetter(beansDefinitions.get(refBeanId)).getValue();
-                }
-
-                Method method = aClass.getMethod(SETTER_PREFIX + capitalize(fieldName), field.getType());
-
-
-                method.invoke(beanInstance, refBeanInstance);
-
-            }
-
-        }
-        Bean bean = new Bean();
-        bean.setBeadId(beanId);
-        bean.setValue(beanInstance);
-        beansInstances.add(bean);
-        return bean;
+    private Object getParsedValue(String value, Class fieldType) {
+        return ValueParser.valueOf(fieldType.getSimpleName().toUpperCase()).getValue(value);
     }
 
     private String capitalize(String word) {
